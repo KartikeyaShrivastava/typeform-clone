@@ -237,3 +237,4 @@ contract (request/response models, status codes, examples). High level:
 
 Errors are always returned as `{"detail": ...}` with the appropriate HTTP status
 code (400/404/422/500); stack traces are never leaked to the client.
+
