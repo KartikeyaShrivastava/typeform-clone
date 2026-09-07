@@ -20,6 +20,7 @@ export function BuilderNavbar({
   onPublishToggle,
   onOpenSettings,
   onOpenShare,
+  disablePublish,
 }: {
   title: string;
   onTitleChange: (v: string) => void;
@@ -31,6 +32,7 @@ export function BuilderNavbar({
   onPublishToggle: () => void;
   onOpenSettings: () => void;
   onOpenShare: () => void;
+  disablePublish?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
 
@@ -81,7 +83,13 @@ export function BuilderNavbar({
         <Button variant="secondary" size="sm" onClick={onOpenShare}>
           <Share2 className="h-3.5 w-3.5" /> Share
         </Button>
-        <Button size="sm" loading={publishing} onClick={onPublishToggle}>
+        <Button
+          size="sm"
+          loading={publishing}
+          onClick={onPublishToggle}
+          disabled={status !== "published" && disablePublish}
+          title={status !== "published" && disablePublish ? "All questions need text before publishing" : undefined}
+        >
           {status === "published" ? "Unpublish" : "Publish"}
         </Button>
       </div>

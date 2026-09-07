@@ -6,25 +6,15 @@ import { Input, Label, Textarea } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { getQuestionTypeMeta } from "@/lib/question-types";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-export function ConfigPanel({
+function ConfigPanelFields({
   question,
   onChange,
 }: {
-  question: Question | null;
+  question: Question;
   onChange: (patch: Partial<Question>) => void;
 }) {
-  if (!question) {
-    return (
-      <aside className="hidden w-80 shrink-0 border-l border-border-soft bg-ink/60 p-6 xl:block">
-        <div className="flex h-full flex-col items-center justify-center text-center">
-          <Settings2 className="h-5 w-5 text-muted-2" />
-          <p className="mt-3 text-sm text-muted">Select a question to edit its settings.</p>
-        </div>
-      </aside>
-    );
-  }
-
   const meta = getQuestionTypeMeta(question.question_type);
   const options = question.options ?? [];
 
@@ -43,18 +33,20 @@ export function ConfigPanel({
   }
 
   return (
-    <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border-soft bg-ink/60 p-6 xl:block">
+    <>
       <p className="text-xs font-medium uppercase tracking-wide text-muted-2">{meta.label}</p>
 
       <div className="mt-4 space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="q-text">Question</Label>
           <Textarea
+            key={question.id}
             id="q-text"
             value={question.question_text}
             onChange={(e) => onChange({ question_text: e.target.value })}
             rows={2}
             placeholder="Type your question"
+            autoFocus={!question.question_text}
           />
         </div>
 
@@ -121,6 +113,56 @@ export function ConfigPanel({
           </div>
         )}
       </div>
+    </>
+  );
+}
+
+export function ConfigPanel({
+  question,
+  onChange,
+}: {
+  question: Question | null;
+  onChange: (patch: Partial<Question>) => void;
+}) {
+  if (!question) {
+    return (
+      <aside className="hidden w-80 shrink-0 border-l border-border-soft bg-ink/60 p-6 xl:block">
+        <div className="flex h-full flex-col items-center justify-center text-center">
+          <Settings2 className="h-5 w-5 text-muted-2" />
+          <p className="mt-3 text-sm text-muted">Select a question to edit its settings.</p>
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border-soft bg-ink/60 p-6 xl:block">
+      <ConfigPanelFields question={question} onChange={onChange} />
     </aside>
+  );
+}
+
+/** Below the xl breakpoint there's no room for the fixed side panel, so question
+ * settings open as a modal instead, triggered from the selected question card. */
+export function ConfigPanelSheet({
+  question,
+  onChange,
+  open,
+  onOpenChange,
+}: {
+  question: Question | null;
+  onChange: (patch: Partial<Question>) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  if (!question) return null;
+  const meta = getQuestionTypeMeta(question.question_type);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent title={meta.label} className="max-h-[85vh] overflow-y-auto xl:hidden">
+        <ConfigPanelFields question={question} onChange={onChange} />
+      </DialogContent>
+    </Dialog>
   );
 }

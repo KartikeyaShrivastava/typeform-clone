@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Copy, Trash2, Asterisk } from "lucide-react";
+import { GripVertical, Copy, Trash2, Asterisk, Settings2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Question } from "@/lib/types";
 import { cn, questionTypeLabel } from "@/lib/utils";
@@ -13,6 +13,7 @@ export function QuestionCard({
   index,
   selected,
   onSelect,
+  onOpenSettings,
   onDuplicate,
   onDelete,
 }: {
@@ -20,6 +21,7 @@ export function QuestionCard({
   index: number;
   selected: boolean;
   onSelect: () => void;
+  onOpenSettings: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
@@ -88,27 +90,39 @@ export function QuestionCard({
         )}
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="flex shrink-0 items-center gap-1">
         <button
-          aria-label="Duplicate question"
+          aria-label="Edit question settings"
           onClick={(e) => {
             e.stopPropagation();
-            onDuplicate();
+            onOpenSettings();
           }}
-          className="rounded-md p-1.5 text-muted-2 hover:bg-surface-3 hover:text-paper"
+          className="rounded-md p-1.5 text-muted-2 hover:bg-surface-3 hover:text-paper xl:hidden"
         >
-          <Copy className="h-3.5 w-3.5" />
+          <Settings2 className="h-3.5 w-3.5" />
         </button>
-        <button
-          aria-label="Delete question"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="rounded-md p-1.5 text-muted-2 hover:bg-danger/10 hover:text-danger"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            aria-label="Duplicate question"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            className="rounded-md p-1.5 text-muted-2 hover:bg-surface-3 hover:text-paper"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <button
+            aria-label="Delete question"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="rounded-md p-1.5 text-muted-2 hover:bg-danger/10 hover:text-danger"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

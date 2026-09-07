@@ -53,8 +53,8 @@ def _compute_yes_no_stats(answers: list) -> dict:
 
 def _compute_rating_stats(answers: list, question: Question) -> dict:
     settings = question.settings or {}
-    max_rating = int(settings.get("max", 5))
-    min_rating = int(settings.get("min", 1))
+    max_rating = int(settings.get("max_rating", 5))
+    min_rating = int(settings.get("min_rating", 1))
 
     numeric_values = [_numeric(v) for v in answers]
     numeric_values = [v for v in numeric_values if v is not None]

@@ -77,8 +77,8 @@ def validate_answer_value(question: Question, value) -> None:
 
     elif qtype == QuestionType.RATING:
         settings = question.settings or {}
-        max_rating = settings.get("max", 5)
-        min_rating = settings.get("min", 1)
+        max_rating = settings.get("max_rating", 5)
+        min_rating = settings.get("min_rating", 1)
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             raise AnswerValidationError(question.id, f"'{question.question_text}' must be a number")
         if value < min_rating or value > max_rating:

@@ -16,7 +16,7 @@ import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { BuilderNavbar } from "@/components/builder/builder-navbar";
 import { TypeSidebar } from "@/components/builder/type-sidebar";
 import { QuestionList } from "@/components/builder/question-list";
-import { ConfigPanel } from "@/components/builder/config-panel";
+import { ConfigPanel, ConfigPanelSheet } from "@/components/builder/config-panel";
 import { BuilderPreview } from "@/components/builder/builder-preview";
 import { SettingsDialog } from "@/components/builder/settings-dialog";
 import { ShareDialog } from "@/components/builder/share-dialog";
@@ -44,6 +44,7 @@ export default function BuilderPage() {
   const [title, setTitle] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [mobileConfigOpen, setMobileConfigOpen] = useState(false);
   const titleHydrated = useRef(false);
 
   useEffect(() => {
@@ -163,6 +164,7 @@ export default function BuilderPage() {
         onPublishToggle={() => publishForm.mutate(form.status !== "published")}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenShare={() => setShareOpen(true)}
+        disablePublish={form.questions.some((q) => !q.question_text || !q.question_text.trim())}
       />
 
       {tab === "builder" ? (
@@ -175,6 +177,10 @@ export default function BuilderPage() {
                 questions={[...form.questions].sort((a, b) => a.position - b.position)}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
+                onOpenSettings={(id) => {
+                  setSelectedId(id);
+                  setMobileConfigOpen(true);
+                }}
                 onReorder={(ids) => reorderQuestions.mutate(ids)}
                 onDuplicate={(id) => {
                   const q = form.questions.find((x) => x.id === id);
@@ -205,6 +211,15 @@ export default function BuilderPage() {
               if (!selectedQuestion) return;
               handleQuestionPatch(selectedQuestion.id, patch);
             }}
+          />
+          <ConfigPanelSheet
+            question={selectedQuestion}
+            onChange={(patch) => {
+              if (!selectedQuestion) return;
+              handleQuestionPatch(selectedQuestion.id, patch);
+            }}
+            open={mobileConfigOpen}
+            onOpenChange={setMobileConfigOpen}
           />
         </div>
       ) : (

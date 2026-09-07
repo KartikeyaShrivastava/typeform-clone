@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.form import Form, FormStatus
-from app.models.question import Question
+from app.models.question import Question, QuestionType
 from app.models.response import FormResponse
 from app.schemas.form import FormCreate, FormUpdate
 from app.schemas.question import QuestionCreate, QuestionUpdate
@@ -104,7 +104,25 @@ async def duplicate_form(db: AsyncSession, form_id: str) -> Form:
 
 
 async def publish_form(db: AsyncSession, form_id: str) -> Form:
-    form = await _get_form_or_404(db, form_id)
+    form = await _get_form_or_404(db, form_id, with_questions=True)
+
+    for question in form.questions:
+        if not question.question_text or not question.question_text.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="All questions need question text before publishing",
+            )
+        if question.question_type in (QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN):
+            options = question.options or []
+            if not options or any(not (opt or "").strip() for opt in options):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="All options need text before publishing",
+                )
+
+    if not form.title or not form.title.strip():
+        form.title = "Untitled form"
+
     if not form.public_slug:
         slug = generate_slug()
         while (await db.execute(select(Form).where(Form.public_slug == slug))).scalar_one_or_none():

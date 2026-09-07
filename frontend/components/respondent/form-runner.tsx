@@ -54,6 +54,11 @@ export function FormRunner({
   const question = questions[index];
   const isLast = index === questions.length - 1;
 
+  // onAutoAdvance below is scheduled via setTimeout right after onChange fires;
+  // without this ref it would close over the goNext (and answers) from before
+  // the click's state update, silently dropping the just-picked value on submit.
+  const goNextRef = useRef<() => void>(() => {});
+
   useEffect(() => {
     setError(null);
   }, [index]);
@@ -73,6 +78,7 @@ export function FormRunner({
     setDirection(1);
     setIndex((i) => i + 1);
   }
+  goNextRef.current = goNext;
 
   function goBack() {
     if (index === 0) return;
@@ -147,7 +153,7 @@ export function FormRunner({
                   question={question}
                   value={answers[question.id] ?? null}
                   onChange={(v) => setAnswers((prev) => ({ ...prev, [question.id]: v }))}
-                  onAutoAdvance={() => setTimeout(goNext, 260)}
+                  onAutoAdvance={() => setTimeout(() => goNextRef.current(), 260)}
                   accent={accent}
                   error={error}
                 />

@@ -54,7 +54,7 @@ async def seed_customer_feedback_form(db) -> Form:
         question_text="How satisfied are you?",
         question_type=QuestionType.RATING,
         required=True,
-        settings={"max": 5, "icon": "star"},
+        settings={"max_rating": 5},
         position=2,
     )
     q_feature = Question(

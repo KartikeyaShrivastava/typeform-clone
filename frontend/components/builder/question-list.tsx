@@ -23,6 +23,7 @@ export function QuestionList({
   questions,
   selectedId,
   onSelect,
+  onOpenSettings,
   onReorder,
   onDuplicate,
   onDelete,
@@ -30,6 +31,7 @@ export function QuestionList({
   questions: Question[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onOpenSettings: (id: string) => void;
   onReorder: (ids: string[]) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -76,6 +78,7 @@ export function QuestionList({
                 index={i}
                 selected={q.id === selectedId}
                 onSelect={() => onSelect(q.id)}
+                onOpenSettings={() => onOpenSettings(q.id)}
                 onDuplicate={() => onDuplicate(q.id)}
                 onDelete={() => onDelete(q.id)}
               />

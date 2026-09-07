@@ -6,6 +6,7 @@ import { Plus, Search, LayoutGrid, List } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormCard } from "@/components/dashboard/form-card";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -18,6 +19,8 @@ export default function FormsDashboardPage() {
   const { data: forms, isLoading, isError } = useForms();
   const createForm = useCreateForm();
   const [query, setQuery] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
 
   const filtered = useMemo(() => {
     if (!forms) return [];
@@ -36,10 +39,18 @@ export default function FormsDashboardPage() {
   );
 
   function handleCreate() {
+    setNewTitle("");
+    setCreateOpen(true);
+  }
+
+  function submitCreate() {
     createForm.mutate(
-      { title: "Untitled form" },
+      { title: newTitle.trim() || "Untitled form" },
       {
-        onSuccess: (form) => router.push(`/forms/${form.id}/edit`),
+        onSuccess: (form) => {
+          setCreateOpen(false);
+          router.push(`/forms/${form.id}/edit`);
+        },
         onError: () => toast({ title: "Couldn't create form", variant: "error" }),
       }
     );
@@ -124,6 +135,28 @@ export default function FormsDashboardPage() {
           )}
         </div>
       </main>
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent title="Name your form" description="You can always change this later.">
+          <div className="space-y-4">
+            <Input
+              autoFocus
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Untitled form"
+              onKeyDown={(e) => e.key === "Enter" && submitCreate()}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="secondary" onClick={() => setCreateOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={submitCreate} loading={createForm.isPending}>
+                Create form
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

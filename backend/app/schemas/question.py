@@ -8,7 +8,7 @@ from app.models.question import QuestionType
 
 
 class QuestionBase(BaseModel):
-    question_text: str = Field(..., min_length=1, max_length=500)
+    question_text: str = Field(default="", min_length=0, max_length=500)
     description: str | None = None
     question_type: QuestionType
     required: bool = False
@@ -30,7 +30,7 @@ class QuestionCreate(QuestionBase):
 
 
 class QuestionUpdate(BaseModel):
-    question_text: str | None = Field(None, min_length=1, max_length=500)
+    question_text: str | None = Field(None, min_length=0, max_length=500)
     description: str | None = None
     question_type: QuestionType | None = None
     required: bool | None = None

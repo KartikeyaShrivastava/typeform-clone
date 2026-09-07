@@ -13,7 +13,7 @@ class FormCreate(BaseModel):
 
 
 class FormUpdate(BaseModel):
-    title: str | None = Field(None, min_length=1, max_length=255)
+    title: str | None = Field(None, min_length=0, max_length=255)
     description: str | None = None
     theme_config: dict[str, Any] | None = None
     thank_you_title: str | None = None
